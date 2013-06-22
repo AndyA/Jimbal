@@ -1,26 +1,30 @@
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+/* mavrelay.c */
+
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <errno.h>
 #include <fcntl.h>
-#include <termios.h>
+#include <jd_pretty.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <termios.h>
+#include <unistd.h>
 
 /* TODO */
 #include <v1.0/ardupilotmega/mavlink.h>
 
 /* Should probably allow this to be passed in on the command line */
-const char *ser_path = "/dev/ttyACM0";
+const char *ser_path = "/dev/ttyAMA0";
 
 #define SRV_IP "127.0.0.1" // loopback
 #define LOCAL_PORT 5760    // Ardupilot default port
 #define MAVLINK_LOCAL_UDP_PORT 14551  // Default UDP port for Mavlink 
 #define MAVLINK_REMOTE_UDP_PORT 14550 // QGC listens to this
+#define BAUD 57600
 
 struct thread_args {
   int ser_fd;
@@ -30,7 +34,7 @@ struct thread_args {
 struct sockaddr_in gcAddr;
 struct sockaddr_in locAddr;
 
-void forward_udp_2_serial(struct thread_args *r2) {
+static void forward_udp_2_serial(struct thread_args *r2) {
   int serial_fd = r2->ser_fd;
   int udp_socket = r2->udp_sock;
   char rcv_buff[1024];
@@ -71,7 +75,7 @@ void forward_udp_2_serial(struct thread_args *r2) {
   }
 }
 
-void forward_serial_2_udp(struct thread_args *args) {
+static void forward_serial_2_udp(struct thread_args *args) {
   char recvd_byte;
   mavlink_status_t msg_status;
   mavlink_message_t msg;
@@ -116,7 +120,7 @@ void forward_serial_2_udp(struct thread_args *args) {
   }
 }
 
-void init_serial_port(int ser_port) {
+static void init_serial_port(int ser_port) {
   struct termios ser_attr;
   // Issue TIOCEXCL ioctl to prevent additional opens except by root-owned processes.
   if (ioctl(ser_port, TIOCEXCL) == -1) {
@@ -132,7 +136,7 @@ void init_serial_port(int ser_port) {
     exit(EXIT_FAILURE);
   }
   cfmakeraw(&ser_attr);
-  cfsetspeed(&ser_attr, 115200);// Cause the new options to take effect immediately.
+  cfsetspeed(&ser_attr, BAUD);// Cause the new options to take effect immediately.
   // 8N1
   ser_attr.c_cflag &= ~PARENB;
   ser_attr.c_cflag &= ~CSTOPB;
@@ -167,6 +171,7 @@ int main(int argc, char *argv[]) {
   char target_ip[100];
   int sock;
   int ser_port;
+
   // Check if --help flag was used
   if ((argc == 2) && (strcmp(argv[1], help) == 0)) {
     printf("\n");
