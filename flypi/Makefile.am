@@ -10,7 +10,7 @@ bin_PROGRAMS = flypi
 
 flypi_SOURCES = flypi.c flypi.h
 
-flypi_CFAGS = $(MAVLINK_CFLAGS)
+flypi_CFLAGS = $(MAVLINK_CFLAGS)
 flypi_LDFLAGS = $(MAVLINK_LDFLAGS)
 
 test: all

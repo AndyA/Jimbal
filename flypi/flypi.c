@@ -1,8 +1,9 @@
 /* flypi.c */
 
 #include <stdio.h>
+#include <v1.0/ardupilotmega/mavlink.h>
 
-#include "flypi.c"
+#include "flypi.h"
 
 int main(void) {
   return 0;
