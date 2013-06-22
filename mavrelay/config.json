@@ -1,0 +1,7 @@
+{
+   "baud" : 57600,
+   "dev" : "/dev/ttyAMA0",
+   "host" : "kumina.local",
+   "rx_port" : 14551,
+   "tx_port" : 14550
+}
