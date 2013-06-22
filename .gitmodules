@@ -1,6 +1,6 @@
-[submodule "c_uart_interface_example"]
-  path = mavlink/c_uart_interface_example
-  url = https://github.com/mavlink/c_uart_interface_example.git
-[submodule "mavlink"]
-  path = mavlink/mavlink
-  url = https://github.com/mavlink/mavlink.git
+[submodule "mavlink/c_uart_interface_example"]
+	path = mavlink/c_uart_interface_example
+	url = https://github.com/mavlink/c_uart_interface_example.git
+[submodule "mavlink/mavlink"]
+	path = mavlink/mavlink
+	url = https://github.com/mavlink/mavlink.git
